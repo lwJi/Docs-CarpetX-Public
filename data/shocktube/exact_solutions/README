@@ -1,0 +1,8 @@
+In all the directories you can find a file called
+solution_last.dat. This file contains only the exact solution computed
+at the accuracy reported in the paper. This solution correspond to the
+last solution written in the file solution.dat which on the contrary
+stores the output of each iteration done by the solver during the
+computation of the exact solution. The accuracy of each solution
+written in the file solution.dat can be found in funcv.dat which
+reports the jumps at the contact discontinuity of all the variables.
