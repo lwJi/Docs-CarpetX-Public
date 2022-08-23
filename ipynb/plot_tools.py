@@ -6,6 +6,8 @@ import re
 import numpy as np
 
 import matplotlib.pyplot as plt
+from scipy.interpolate import interp1d
+
 
 ##########
 # Basics #
@@ -53,6 +55,28 @@ def load_dataset(dirs, files):
                 datarow.append(fdata)
                 dataset.append(datarow)
     return dataset
+
+
+#################
+# Interpolation #
+#################
+
+# interp 1d data
+def interp_data(data, cols=[1,2], kind='linear'):
+    x = [d[cols[0]-1] for d in data]
+    y = [d[cols[1]-1] for d in data]
+    f = interp1d(x, y, kind)
+    return f
+
+# interp multiple 1d data
+def interp_dataset(dataset, cols=[1,2], kind='linear'):
+    funcset = []
+    for d in dataset:
+        funcrow=[]
+        funcrow.append(d[0])
+        funcrow.append(interp_data(d[1], cols, kind))
+        funcset.append(funcrow)
+    return funcset
 
 
 ########
