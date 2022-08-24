@@ -5,6 +5,7 @@ import os
 import re
 import numpy as np
 
+import math
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 from scipy.integrate import simpson
@@ -49,11 +50,11 @@ def interp1d_data(data, cols=[1,2], kind='linear'):
     return interp1d(x, y, kind)
 
 # diff with exact solution
-def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
+def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100, norm=1):
     diff = []
     x = np.linspace(lims[0], lims[1], num)
     for i in range(len(x)):
-        diff.append([x[i], abs(f_data(x[i]) - f_exact(x[i]))])
+        diff.append([x[i], pow(abs(f_data(x[i])-f_exact(x[i])), norm)])
     return diff
 
 
@@ -67,6 +68,7 @@ class DataSet:
         self.interp1dset = []
         self.diffset = []
         self.integset = []
+        self.convorderset = []
         dict_list = []
         for i in range(len(dirs)): # go over all dirs
             d = dirs[i]
@@ -78,19 +80,33 @@ class DataSet:
 
     # choose two cols in self.dataset to do 1d interp
     def interp1d(self, cols=[1,2], kind='linear'):
-        self.inter1dset = []
+        self.interp1dset.clear()
         for d in self.dataset:
             self.interp1dset.append(interp1d_data(d, cols, kind))
 
-    def diff(self, f_exact, lims=[-0.5,0.5], num=100):
-        self.diffset = []
+    def diff(self, f_exact, lims=[-0.5,0.5], num=100, norm=1):
+        self.diffset.clear()
         for f in self.interp1dset:
-            self.diffset.append(diff_data(f, f_exact, lims, num))
+            self.diffset.append(diff_data(f, f_exact, lims, num, norm))
 
     def integ(self):
-        self.integset = []
+        self.integset.clear()
         for d in self.diffset:
             self.integset.append(simpson([x[1] for x in d], [x[0] for x in d]))
+
+    def convorder(self):
+        self.convorderset.clear()
+        for i in range(len(self.integset)-1):
+            integ_low = self.integset[i]
+            integ_high = self.integset[i+1]
+            self.convorderset.append(math.log(integ_low/integ_high, 2))
+
+    # wrapper
+    def calcall(self, f_exact, lims=[-0.5,0.5], num=100):
+        self.interp1d()
+        self.diff(f_exact, lims, num)
+        self.integ()
+        self.convorder()
 
     # get functions
     def getDir_name(self, i):
@@ -108,17 +124,20 @@ class DataSet:
     def getIntegset(self):
         return self.integset
 
+    def getConvorderset(self):
+        return self.convorderset
+
     # plot functions
     def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False, exact=False):
+                 savefig=False, xlim=[-0.5,0.5], num=100, f_exact=False):
         for i in range(len(self.dataset)):
             d = self.dataset[i]
             plt.plot([x[cols[0]-1] for x in d],
                      [x[cols[1]-1] for x in d],
                     marker, label=self.dict[i])
-        if(exact):
-            plt.plot([x[1] for x in exact],
-                     [x[2] for x in exact], marker, lable='exact')
+        if(f_exact):
+            x_new = np.linspace(xlim[0], xlim[1], num)
+            plt.plot(x_new, f_exact(x_new), marker, label='exact')
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
         if(savefig):
