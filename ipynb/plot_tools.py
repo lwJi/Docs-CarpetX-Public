@@ -88,7 +88,7 @@ def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
     for i in range(len(x)):
         diffrow = []
         diffrow.append(x[i])
-        diffrow.append(abs(f_data(x) - f_exact(x)))
+        diffrow.append(abs(f_data(x[i]) - f_exact(x[i])))
         diff.append(diffrow)
     return diff
 
