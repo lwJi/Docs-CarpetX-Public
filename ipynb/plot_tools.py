@@ -7,6 +7,7 @@ import numpy as np
 
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
+from scipy.integrate import simpson
 
 
 ####################
@@ -55,6 +56,7 @@ def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
         diff.append([x[i], abs(f_data(x[i]) - f_exact(x[i]))])
     return diff
 
+
 #################
 # DataSet Class #
 #################
@@ -64,6 +66,7 @@ class DataSet:
         self.dataset = []
         self.interp1dset = []
         self.diffset = []
+        self.integset = []
         dict_list = []
         for i in range(len(dirs)): # go over all dirs
             d = dirs[i]
@@ -84,6 +87,11 @@ class DataSet:
         for f in self.interp1dset:
             self.diffset.append(diff_data(f, f_exact, lims, num))
 
+    def integ(self):
+        self.integset = []
+        for d in self.diffset:
+            self.integset.append(simpson([x[1] for x in d], [x[0] for x in d]))
+
     # get functions
     def getDir_name(self, i):
         return self.dict[i]
@@ -96,6 +104,9 @@ class DataSet:
 
     def getDiffset(self):
         return self.diffset
+
+    def getIntegset(self):
+        return self.integset
 
     # plot functions
     def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
