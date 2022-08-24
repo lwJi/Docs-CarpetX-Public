@@ -9,12 +9,12 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
 
 
-##########
-# Basics #
-##########
+####################
+# Basics Functions #
+####################
 
 # set limit for plt
-def set_plots(plt, labels, lims):
+def set_plot(plt, labels, lims):
     # set labels
     if(labels):
         if(type(labels)==list):
@@ -32,34 +32,11 @@ def set_plots(plt, labels, lims):
             # 1d list case
             plt.ylim(lims)
 
-
-#############
-# Load Data #
-#############
-
 # load one file
 def load_data(fullpath):
     print("loading", fullpath)
     fdata = np.loadtxt(fullpath)
     return fdata
-
-# load multiple files in all dirs
-def load_dataset(dirs, files):
-    dataset = []
-    for d in dirs: # go over all dirs
-        for f in os.listdir(d): # go over all files in d
-            if re.search(files, f):
-                fdata = load_data(os.path.join(d, f))
-                datarow = []
-                datarow.append(os.path.basename(d)) # lowest level of dir
-                datarow.append(fdata)
-                dataset.append(datarow)
-    return dataset
-
-
-#################
-# Interpolation #
-#################
 
 # interp 1d data
 def interp_data(data, cols=[1,2], kind='linear'):
@@ -68,55 +45,87 @@ def interp_data(data, cols=[1,2], kind='linear'):
     f = interp1d(x, y, kind)
     return f
 
-# interp multiple 1d data
-def interp_dataset(dataset, cols=[1,2], kind='linear'):
-    funcset = []
-    for d in dataset:
-        funcrow = []
-        funcrow.append(d[0])
-        funcrow.append(interp_data(d[1], cols, kind))
-        funcset.append(funcrow)
-    return funcset
-
-
-############################################
-# Calculate Difference with Exact Solution #
-############################################
+# diff with exact solution
 def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
     diff = []
     x = np.linspace(lims[0], lims[1], num)
     for i in range(len(x)):
-        diffrow = []
-        diffrow.append(x[i])
-        diffrow.append(abs(f_data(x[i]) - f_exact(x[i])))
-        diff.append(diffrow)
+        diff.append([x[i], abs(f_data(x[i]) - f_exact(x[i]))])
     return diff
 
-def diff_dataset(f_set, f_exact, lims=[-0.5, 0.5], num=100):
-    diffset = []
-    for f in f_set:
-        diffrow = []
-        diffrow.append(f[0])
-        diffrow.append(diff_data(f[1], f_exact, lims, num))
-        diffset.append(diffrow)
-    return diffset
+#################
+# DataSet Class #
+#################
 
+class DataSet:
+    def __init__(self, dirs, files):
+        self.dataset = []
+        self.interpf = []
+        self.diffset = []
+        dict_list = []
+        for i in range(len(dirs)): # go over all dirs
+            d = dirs[i]
+            for f in os.listdir(d): # go over all files in d
+                if re.search(files, f):
+                    fdata = load_data(os.path.join(d, f))
+                    self.dataset.append(fdata)
+                    dict_list.append([i, os.path.basename(d)])
+        self.dict = dict(dict_list)
 
-########
-# Plot #
-########
+    def interp(self, cols=[1,2], kind='linear'):
+        for d in self.dataset:
+            self.interpf.append(interp_data(d, cols, kind))
 
-def plot(dataset, cols=[1,2], marker='-',
-         labels=False, lims=False,
-         savefig=False):
-    for d in dataset:
-        plt.plot([i[cols[0]-1] for i in d[1]],
-                 [i[cols[1]-1] for i in d[1]],
-                 marker, label=d[0])
-    set_plots(plt, labels, lims)
-    plt.legend(loc="best")
+    def diff(self, f_exact, lims=[-0.5,0.5], num=100):
+        for f in self.interpf:
+            self.diffset.append(diff_data(f, f_exact, lims, num))
 
-    if(savefig):
-        plt.savefig('./rho.pdf', bbox_inches='tight')
+    # get functions
+    def getDir_name(self, i):
+        return self.dict[i]
+
+    def getInterp(self):
+        return self.interpf
+
+    def getDiffset(self):
+        return self.diffset
+
+    # plot functions
+    def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
+                 savefig=False):
+        for i in range(len(self.dataset)):
+            d = self.dataset[i]
+            plt.plot([x[cols[0]-1] for x in d],
+                     [x[cols[1]-1] for x in d],
+                    marker, label=self.dict[i])
+        set_plot(plt, labels, lims)
+        plt.legend(loc="best")
+        if(savefig):
+            plt.savefig('./data.pdf', bbox_inches='tight')
+
+    def plotDiff(self, cols=[1,2], marker='-', labels=False, lims=False,
+                 savefig=False):
+        for i in range(len(self.diffset)):
+            d = self.diffset[i]
+            plt.plot([x[cols[0]-1] for x in d],
+                     [x[cols[1]-1] for x in d],
+                    marker, label=self.dict[i])
+        set_plot(plt, labels, lims)
+        plt.legend(loc="best")
+        if(savefig):
+            plt.savefig('./diff.pdf', bbox_inches='tight')
+
+    def plotConv(self, cols=[1,2], marker='-', labels=False, lims=False,
+                 savefig=False, conv_order=2):
+        for i in range(len(self.diffset)):
+            d = self.diffset[i]
+            plt.plot([x[cols[0]-1] for x in d],
+                     [x[cols[1]-1]*(i+1)**conv_order for x in d],
+                     marker, label=self.dict[i])
+        set_plot(plt, labels, lims)
+        plt.legend(loc="best")
+        if(savefig):
+            plt.savefig('./conv.pdf', bbox_inches='tight')
+
 
 # end of plot_tools.py
