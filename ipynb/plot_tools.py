@@ -33,17 +33,19 @@ def set_plot(plt, labels, lims):
             plt.ylim(lims)
 
 # load one file
-def load_data(fullpath):
-    print("loading", fullpath)
-    fdata = np.loadtxt(fullpath)
-    return fdata
+def load_data(fullpath, cols=None):
+    if(cols==None):
+        print("loading", fullpath, "cols: all")
+        return np.loadtxt(fullpath) # load all columns
+    else:
+        print("loading", fullpath, "cols:", cols)
+        return np.loadtxt(fullpath, usecols=tuple([i-1 for i in cols]))
 
 # interp 1d data
-def interp_data(data, cols=[1,2], kind='linear'):
+def interp1d_data(data, cols=[1,2], kind='linear'):
     x = [d[cols[0]-1] for d in data]
     y = [d[cols[1]-1] for d in data]
-    f = interp1d(x, y, kind)
-    return f
+    return interp1d(x, y, kind)
 
 # diff with exact solution
 def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
@@ -58,34 +60,37 @@ def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100):
 #################
 
 class DataSet:
-    def __init__(self, dirs, files):
+    def __init__(self, dirs, files, cols=None):
         self.dataset = []
-        self.interpf = []
+        self.interp1dset = []
         self.diffset = []
         dict_list = []
         for i in range(len(dirs)): # go over all dirs
             d = dirs[i]
             for f in os.listdir(d): # go over all files in d
                 if re.search(files, f):
-                    fdata = load_data(os.path.join(d, f))
-                    self.dataset.append(fdata)
+                    self.dataset.append(load_data(os.path.join(d, f), cols))
                     dict_list.append([i, os.path.basename(d)])
         self.dict = dict(dict_list)
 
-    def interp(self, cols=[1,2], kind='linear'):
+    # choose two cols in self.dataset to do 1d interp
+    def interp1d(self, cols=[1,2], kind='linear'):
         for d in self.dataset:
-            self.interpf.append(interp_data(d, cols, kind))
+            self.interp1dset.append(interp1d_data(d, cols, kind))
 
     def diff(self, f_exact, lims=[-0.5,0.5], num=100):
-        for f in self.interpf:
+        for f in self.interp1dset:
             self.diffset.append(diff_data(f, f_exact, lims, num))
 
     # get functions
     def getDir_name(self, i):
         return self.dict[i]
 
+    def getDataset(self):
+        return self.dataset
+
     def getInterp(self):
-        return self.interpf
+        return self.interp1dset
 
     def getDiffset(self):
         return self.diffset
@@ -106,24 +111,24 @@ class DataSet:
         if(savefig):
             plt.savefig('./data.pdf', bbox_inches='tight')
 
-    def plotDiff(self, cols=[1,2], marker='-', labels=False, lims=False,
+    def plotDiff(self, marker='-', labels=False, lims=False,
                  savefig=False):
         for i in range(len(self.diffset)):
             d = self.diffset[i]
-            plt.plot([x[cols[0]-1] for x in d],
-                     [x[cols[1]-1] for x in d],
+            plt.plot([x[0] for x in d],
+                     [x[1] for x in d],
                     marker, label=self.dict[i])
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
         if(savefig):
             plt.savefig('./diff.pdf', bbox_inches='tight')
 
-    def plotConv(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False, conv_order=2):
+    def plotConv(self, marker='-', labels=False, lims=False,
+                 savefig=False, conv_order=1):
         for i in range(len(self.diffset)):
             d = self.diffset[i]
-            plt.plot([x[cols[0]-1] for x in d],
-                     [x[cols[1]-1]*(i+1)**(conv_order) for x in d],
+            plt.plot([x[0] for x in d],
+                     [x[1]*(i+1)**(conv_order) for x in d],
                      marker, label=self.dict[i])
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
