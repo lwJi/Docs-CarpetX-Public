@@ -92,12 +92,15 @@ class DataSet:
 
     # plot functions
     def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False):
+                 savefig=False, exact=False):
         for i in range(len(self.dataset)):
             d = self.dataset[i]
             plt.plot([x[cols[0]-1] for x in d],
                      [x[cols[1]-1] for x in d],
                     marker, label=self.dict[i])
+        if(exact):
+            plt.plot([x[1] for x in exact],
+                     [x[2] for x in exact], marker, lable='exact')
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
         if(savefig):
@@ -120,7 +123,7 @@ class DataSet:
         for i in range(len(self.diffset)):
             d = self.diffset[i]
             plt.plot([x[cols[0]-1] for x in d],
-                     [x[cols[1]-1]*(i+1)**conv_order for x in d],
+                     [x[cols[1]-1]*(i+1)**(conv_order) for x in d],
                      marker, label=self.dict[i])
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
