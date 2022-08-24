@@ -75,10 +75,12 @@ class DataSet:
 
     # choose two cols in self.dataset to do 1d interp
     def interp1d(self, cols=[1,2], kind='linear'):
+        self.inter1dset = []
         for d in self.dataset:
             self.interp1dset.append(interp1d_data(d, cols, kind))
 
     def diff(self, f_exact, lims=[-0.5,0.5], num=100):
+        self.diffset = []
         for f in self.interp1dset:
             self.diffset.append(diff_data(f, f_exact, lims, num))
 
