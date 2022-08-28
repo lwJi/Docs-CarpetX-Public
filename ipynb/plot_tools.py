@@ -129,13 +129,13 @@ class DataSet:
 
     # plot functions
     def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False, xlim=[-0.5,0.5], num=100, f_exact=False):
+                 savefig=False, xlim=[-0.5,0.5], num=100, f_exact=None):
         for i in range(len(self.dataset)):
             d = self.dataset[i]
             plt.plot([x[cols[0]-1] for x in d],
                      [x[cols[1]-1] for x in d],
                     marker, label=self.dict[i])
-        if(f_exact):
+        if(f_exact is not None):
             x_new = np.linspace(xlim[0], xlim[1], num)
             plt.plot(x_new, f_exact(x_new), marker, label='exact')
         set_plot(plt, labels, lims)
