@@ -50,11 +50,11 @@ def interp1d_data(data, cols=[1,2], kind='linear'):
     return interp1d(x, y, kind)
 
 # diff with exact solution
-def diff_data(f_data, f_exact, lims=[-0.5, 0.5], num=100, norm=1):
+def diff_data(f_data, f_ref, lims=[-0.5, 0.5], num=100, norm=1):
     diff = []
     x = np.linspace(lims[0], lims[1], num)
     for i in range(len(x)):
-        diff.append([x[i], pow(abs(f_data(x[i])-f_exact(x[i])), norm)])
+        diff.append([x[i], pow(abs(f_data(x[i])-f_ref(x[i])), norm)])
     return diff
 
 
@@ -84,10 +84,10 @@ class DataSet:
         for d in self.dataset:
             self.interp1dset.append(interp1d_data(d, cols, kind))
 
-    def diff(self, f_exact, lims=[-0.5,0.5], num=100, norm=1):
+    def diff(self, f_ref, lims=[-0.5,0.5], num=100, norm=1):
         self.diffset.clear()
         for f in self.interp1dset:
-            self.diffset.append(diff_data(f, f_exact, lims, num, norm))
+            self.diffset.append(diff_data(f, f_ref, lims, num, norm))
 
     def integ(self):
         self.integset.clear()
@@ -102,9 +102,9 @@ class DataSet:
             self.convorderset.append(math.log(integ_low/integ_high, 2))
 
     # wrapper
-    def calcall(self, f_exact, lims=[-0.5,0.5], num=100):
+    def calcall(self, f_ref, lims=[-0.5,0.5], num=100):
         self.interp1d()
-        self.diff(f_exact, lims, num)
+        self.diff(f_ref, lims, num)
         self.integ()
         self.convorder()
 
@@ -129,15 +129,15 @@ class DataSet:
 
     # plot functions
     def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False, xlim=[-0.5,0.5], num=100, f_exact=None):
+                 savefig=False, xlim=[-0.5,0.5], num=100, f_ref=None):
         for i in range(len(self.dataset)):
             d = self.dataset[i]
             plt.plot([x[cols[0]-1] for x in d],
                      [x[cols[1]-1] for x in d],
                     marker, label=self.dict[i])
-        if(f_exact is not None):
+        if(f_ref is not None):
             x_new = np.linspace(xlim[0], xlim[1], num)
-            plt.plot(x_new, f_exact(x_new), marker, label='exact')
+            plt.plot(x_new, f_ref(x_new), marker, label='exact')
         set_plot(plt, labels, lims)
         plt.legend(loc="best")
         if(savefig):
