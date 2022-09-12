@@ -1,10 +1,12 @@
 # plot_tools.py
 # (c) Liwei Ji 08/2022
 
-import os
+import os, sys
+sys.path += [ os.path.join(os.path.dirname(__file__),
+                           '../../../Misc-Packages/python/') ]
+import dataset as ds
 import re
 import numpy as np
-
 import math
 import matplotlib.pyplot as plt
 from scipy.interpolate import interp1d
@@ -34,15 +36,6 @@ def set_plot(plt, labels, lims):
             # 1d list case
             plt.ylim(lims)
 
-# load one file
-def load_data(fullpath, cols=None):
-    if(cols==None):
-        print("loading", fullpath, "cols: all")
-        return np.loadtxt(fullpath) # load all columns
-    else:
-        print("loading", fullpath, "cols:", cols)
-        return np.loadtxt(fullpath, usecols=tuple([i-1 for i in cols]))
-
 # interp 1d data
 def interp1d_data(data, cols=[1,2], kind='linear'):
     x = [d[cols[0]-1] for d in data]
@@ -62,21 +55,13 @@ def diff_data(f_data, f_ref, lims=[-0.5, 0.5], num=100, norm=1):
 # DataSet Class #
 #################
 
-class DataSet:
+class DataSet(ds.DataSet):
     def __init__(self, dirs, files, cols=None):
-        self.dataset = []
+        ds.DataSet.__init__(self, dirs, files, cols)
         self.interp1dset = []
         self.diffset = []
         self.integset = []
         self.convorderset = []
-        dict_list = []
-        for i in range(len(dirs)): # go over all dirs
-            d = dirs[i]
-            for f in os.listdir(d): # go over all files in d
-                if re.search(files, f):
-                    self.dataset.append(load_data(os.path.join(d, f), cols))
-                    dict_list.append([i, os.path.basename(d)])
-        self.dict = dict(dict_list)
 
     # choose two cols in self.dataset to do 1d interp
     def interp1d(self, cols=[1,2], kind='linear'):
@@ -107,13 +92,6 @@ class DataSet:
         self.diff(f_ref, lims, num)
         self.integ()
         self.convorder()
-
-    # get functions
-    def getDir_name(self, i):
-        return self.dict[i]
-
-    def getDataset(self):
-        return self.dataset
 
     def getInterp(self):
         return self.interp1dset
