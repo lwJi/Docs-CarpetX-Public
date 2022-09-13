@@ -24,12 +24,22 @@ def interp1d_data(data, cols=[1,2], kind='linear'):
     return interp1d(x, y, kind)
 
 # diff with exact solution
-def diff_data(f_data, f_ref, lims=[-0.5, 0.5], num=None, norm=1):
+def diff_data(data, f_ref, norm=1):
     diff = []
-    x = np.linspace(lims[0], lims[1], num)
-    for i in range(len(x)):
-        diff.append([x[i], pow(abs(f_data(x[i])-f_ref(x[i])), norm)])
+    #x = np.linspace(lims[0], lims[1], num)
+    for i in range(2,len(data)-2):
+        diff.append([data[i,0], pow(abs(data[i,1]-f_ref(data[i,0])), norm)])
     return diff
+
+def plt_exact(data, cols=[1,2], kind='linear', num=200, lims=[-0.5,0.5]):
+    x_new = np.linspace(lims[0], lims[1], num)
+    if (type(kind) == list):
+        for i in range(len(kind)):
+            f_exact = interp1d_data(data, cols, kind[i])
+            plt.plot(x_new, f_exact(x_new), '-')
+    else:
+        f_exact = interp1d_data(data, cols, kind)
+        plt.plot(x_new, f_exact(x_new), '-')
 
 
 #################
@@ -50,10 +60,10 @@ class DataSet(ds.DataSet):
         for d in self.dataset:
             self.interp1dset.append(interp1d_data(d, cols, kind))
 
-    def diff(self, f_ref, lims=[-0.5,0.5], num=None, norm=1):
+    def diff(self, f_ref, norm=1):
         self.diffset.clear()
-        for f in self.interp1dset:
-            self.diffset.append(diff_data(f, f_ref, lims, num, norm))
+        for d in self.dataset:
+            self.diffset.append(diff_data(d, f_ref, norm))
 
     def integ(self):
         self.integset.clear()
@@ -63,18 +73,17 @@ class DataSet(ds.DataSet):
     def convorder(self):
         self.convorderset.clear()
         for i in range(len(self.integset)-1):
-            integ_low = self.integset[i]
-            integ_high = self.integset[i+1]
-            self.convorderset.append(math.log(integ_low/integ_high, 2))
+            low = self.integset[i]
+            high = self.integset[i+1]
+            self.convorderset.append(math.log(low/high, 2))
 
     # wrapper
-    def calcall(self, f_ref, lims=[-0.5,0.5], num=100):
-        self.interp1d()
-        self.diff(f_ref, lims, num)
+    def calcAll(self, f_ref, norm=1):
+        self.diff(f_ref, norm)
         self.integ()
         self.convorder()
 
-    def getInterp(self):
+    def getInterpSet(self):
         return self.interp1dset
 
     def getDiffSet(self):
