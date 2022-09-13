@@ -24,7 +24,7 @@ def interp1d_data(data, cols=[1,2], kind='linear'):
     return interp1d(x, y, kind)
 
 # diff with exact solution
-def diff_data(f_data, f_ref, lims=[-0.5, 0.5], num=100, norm=1):
+def diff_data(f_data, f_ref, lims=[-0.5, 0.5], num=None, norm=1):
     diff = []
     x = np.linspace(lims[0], lims[1], num)
     for i in range(len(x)):
@@ -50,7 +50,7 @@ class DataSet(ds.DataSet):
         for d in self.dataset:
             self.interp1dset.append(interp1d_data(d, cols, kind))
 
-    def diff(self, f_ref, lims=[-0.5,0.5], num=100, norm=1):
+    def diff(self, f_ref, lims=[-0.5,0.5], num=None, norm=1):
         self.diffset.clear()
         for f in self.interp1dset:
             self.diffset.append(diff_data(f, f_ref, lims, num, norm))
@@ -77,13 +77,13 @@ class DataSet(ds.DataSet):
     def getInterp(self):
         return self.interp1dset
 
-    def getDiffset(self):
+    def getDiffSet(self):
         return self.diffset
 
-    def getIntegset(self):
+    def getIntegSet(self):
         return self.integset
 
-    def getConvorderset(self):
+    def getConvorderSet(self):
         return self.convorderset
 
     # plot functions
