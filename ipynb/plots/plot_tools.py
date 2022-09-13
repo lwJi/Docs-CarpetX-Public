@@ -31,15 +31,17 @@ def diff_data(data, f_ref, norm=1):
         diff.append([data[i,0], pow(abs(data[i,1]-f_ref(data[i,0])), norm)])
     return diff
 
-def plt_exact(data, cols=[1,2], kind='linear', num=200, lims=[-0.5,0.5]):
+def plt_exact(data, cols=[1,2], kind='linear', num=200, lims=[-0.5,0.5],
+             marker='-'):
     x_new = np.linspace(lims[0], lims[1], num)
     if (type(kind) == list):
         for i in range(len(kind)):
             f_exact = interp1d_data(data, cols, kind[i])
-            plt.plot(x_new, f_exact(x_new), '-')
+            plt.plot(x_new, f_exact(x_new), marker, label=kind[i])
     else:
         f_exact = interp1d_data(data, cols, kind)
-        plt.plot(x_new, f_exact(x_new), '-')
+        plt.plot(x_new, f_exact(x_new), marker, label=kind)
+    plt.legend(loc="best")
 
 
 #################
@@ -111,10 +113,10 @@ class DataSet(ds.DataSet):
         if(savefig):
             plt.savefig(fig_name, bbox_inches='tight')
 
-    def pltDiff(self, marker='-', labels=False, lims=False,
+    def pltDiff(self, cols=[1,2], marker='-', labels=False, lims=False,
                  fx=lambda x,i:x, fy=lambda x,i:x,
                  savefig=False, fig_name='diff.pdf'):
-        ds.pltSet(self.diffset, self.dictset, [1,2], marker, labels, lims,
+        ds.pltSet(self.diffset, self.dictset, cols, marker, labels, lims,
                   fx, fy)
 
         plt.legend(loc="best")
