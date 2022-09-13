@@ -17,25 +17,6 @@ from scipy.integrate import simpson
 # Basics Functions #
 ####################
 
-# set limit for plt
-def set_plot(plt, labels, lims):
-    # set labels
-    if(labels):
-        if(type(labels)==list):
-            plt.xlabel(labels[0])
-            plt.ylabel(labels[1])
-        else:
-            plt.ylabel(labels)
-    # set limits
-    if(lims):
-        if(type(lims[0])==list):
-            # 2d list case
-            plt.xlim(lims[0])
-            plt.ylim(lims[1])
-        else:
-            # 1d list case
-            plt.ylim(lims)
-
 # interp 1d data
 def interp1d_data(data, cols=[1,2], kind='linear'):
     x = [d[cols[0]-1] for d in data]
@@ -106,44 +87,29 @@ class DataSet(ds.DataSet):
         return self.convorderset
 
     # plot functions
-    def plotData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                 savefig=False, xlim=[-0.5,0.5], num=100, f_ref=None):
-        for i in range(len(self.dataset)):
-            d = self.dataset[i]
-            plt.plot([x[cols[0]-1] for x in d],
-                     [x[cols[1]-1] for x in d],
-                    marker, label=self.dict[i])
+    def pltData(self, cols=[1,2], marker='-', labels=False, lims=False,
+                 fx=lambda x,i:x, fy=lambda x,i:x,
+                 savefig=False, fig_name='data.pdf',
+                 xlim=[-0.5,0.5], num=100, f_ref=None):
+        ds.pltSet(self.dataset, self.dictset, cols, marker, labels, lims,
+                  fx, fy)
+
         if(f_ref is not None):
             x_new = np.linspace(xlim[0], xlim[1], num)
             plt.plot(x_new, f_ref(x_new), marker, label='exact')
-        set_plot(plt, labels, lims)
+
         plt.legend(loc="best")
         if(savefig):
-            plt.savefig('./data.pdf', bbox_inches='tight')
+            plt.savefig(fig_name, bbox_inches='tight')
 
-    def plotDiff(self, marker='-', labels=False, lims=False,
-                 savefig=False):
-        for i in range(len(self.diffset)):
-            d = self.diffset[i]
-            plt.plot([x[0] for x in d],
-                     [x[1] for x in d],
-                    marker, label=self.dict[i])
-        set_plot(plt, labels, lims)
+    def pltDiff(self, marker='-', labels=False, lims=False,
+                 fx=lambda x,i:x, fy=lambda x,i:x,
+                 savefig=False, fig_name='diff.pdf'):
+        ds.pltSet(self.diffset, self.dictset, [1,2], marker, labels, lims,
+                  fx, fy)
+
         plt.legend(loc="best")
         if(savefig):
-            plt.savefig('./diff.pdf', bbox_inches='tight')
-
-    def plotConv(self, marker='-', labels=False, lims=False,
-                 savefig=False, conv_order=1):
-        for i in range(len(self.diffset)):
-            d = self.diffset[i]
-            plt.plot([x[0] for x in d],
-                     [x[1]*(i+1)**(conv_order) for x in d],
-                     marker, label=self.dict[i])
-        set_plot(plt, labels, lims)
-        plt.legend(loc="best")
-        if(savefig):
-            plt.savefig('./conv.pdf', bbox_inches='tight')
-
+            plt.savefig(fig_name, bbox_inches='tight')
 
 # end of plot_tools.py
