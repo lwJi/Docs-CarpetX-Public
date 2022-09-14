@@ -61,10 +61,16 @@ class DataSet(ds.DataSet):
     def getConvSet(self):
         return self.convset
 
-    def diff(self, f_exact):
+    def diff(self, f_exact, difflims=None):
         self.diffset.clear()
         for d in self.dataset:
             self.diffset.append(diff_data(d, f_exact))
+        if(difflims is not None):
+            for d in self.diffset:
+                for i in range(len(d)):
+                    if(d[i][0]<difflims[0] or d[i][0]>difflims[1]):
+                        d[i][1] = 0
+
 
     def norm(self, order=1):
         self.normset.clear()
