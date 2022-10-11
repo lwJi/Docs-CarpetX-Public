@@ -90,12 +90,9 @@ class DataSet(ds.DataSet):
         self.conv()
 
     # plot functions
-    def pltData(self, cols=[1,2], marker='-', labels=False, lims=False,
-                fx=lambda x,i:x, fy=lambda x,i:x,
-                savefig=False, fig_name='data.pdf',
-                num_ref=200, f_exact=None):
-        ds.pltSet(self.dataset, self.dictset, cols, marker, labels, lims,
-                  fx, fy)
+    def pltData(self, cols=[1,2], marker='-', fx=lambda x,i:x, fy=lambda x,i:x,
+                savefig=False, fig_name='data.pdf', num_ref=200, f_exact=None):
+        ds.pltSet(self.dataset, self.dictset, cols, marker, fx, fy)
         if(f_exact is not None):
             data0 = self.dataset[0]
             x_new = np.linspace(data0[2,0], data0[len(data0)-3,0], num_ref)
@@ -104,10 +101,9 @@ class DataSet(ds.DataSet):
         if(savefig):
             plt.savefig(fig_name, bbox_inches='tight')
 
-    def pltDiff(self, cols=[1,2], marker='-', labels=False, lims=False,
-                fx=lambda x,i:x, fy=lambda x,i:x,
+    def pltDiff(self, cols=[1,2], marker='-', fx=lambda x,i:x, fy=lambda x,i:x,
                 savefig=False, fig_name='diff.pdf'):
-        ds.pltSet(self.diffset, self.dictset, cols, marker, labels, lims,
+        ds.pltSet(self.diffset, self.dictset, cols, marker,
                   fx, fy)
         plt.legend(loc="best")
         if(savefig):
