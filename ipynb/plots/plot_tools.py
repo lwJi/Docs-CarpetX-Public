@@ -42,6 +42,23 @@ def plt_exact(data, cols=[1,2], kind='linear', lims=[-0.5,0.5], num=200):
     plt.legend(loc="best")
 
 
+###############################
+# Scaling Plot Data Set Class #
+###############################
+class ScalingSet:
+    def __init__(self, data, fx=lambda x:x, fy=lambda y:y):
+        self.dataset = [[], [], []]
+        for d in data:
+            self.dataset[0].append(fx(d[0]))
+            self.dataset[1].append(fy(d[1]))
+
+    def fitdata(self):
+        fit = np.poly1d(np.polyfit(np.array(self.dataset[0]),
+                                   np.array(self.dataset[1]), 1))
+        print(fit)
+        self.dataset[2] = fit(self.dataset[0])
+
+
 #################
 # DataSet Class #
 #################
