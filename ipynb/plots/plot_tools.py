@@ -52,9 +52,11 @@ class ScalingSet:
             self.dataset[0].append(fx(d[0]))
             self.dataset[1].append(fy(d[1]))
 
-    def fitdata(self):
-        fit = np.poly1d(np.polyfit(np.array(self.dataset[0]),
-                                   np.array(self.dataset[1]), 1))
+    def fitdata(self, fit_range=None):
+        if(fit_range is None):
+            fit_range = slice(0,len(self.dataset))
+        fit = np.poly1d(np.polyfit(np.array(self.dataset[0][fit_range]),
+                                   np.array(self.dataset[1][fit_range]), 1))
         print(fit)
         self.dataset[2] = fit(self.dataset[0])
 
