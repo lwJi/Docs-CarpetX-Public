@@ -1,0 +1,450 @@
+Cactus::cctk_run_title = "QC-0"
+
+Cactus::cctk_full_warnings         = yes
+Cactus::highlight_warning_messages = no
+
+Cactus::terminate       = "iteration"
+Cactus::cctk_itlast     = 32 #* 16
+Cactus::cctk_final_time = 100.0
+
+
+
+ActiveThorns = "IOUtil"
+
+IO::out_dir = $parfile
+
+
+
+ActiveThorns = "TerminationTrigger"
+
+TerminationTrigger::max_walltime          =  0.0   # hours
+TerminationTrigger::on_remaining_walltime = 15.0   # minutes
+
+TerminationTrigger::termination_from_file   = yes
+TerminationTrigger::create_termination_file = yes
+TerminationTrigger::termination_file        = "../TERMINATE"
+
+
+
+ActiveThorns = "AEILocalInterp"
+
+#ActiveThorns = "BLAS LAPACK"
+
+ActiveThorns = "Fortran"
+
+ActiveThorns = "GenericFD"
+
+ActiveThorns = "HDF5"
+
+ActiveThorns = "LoopControl"
+
+ActiveThorns = "Slab"
+
+ActiveThorns = "TGRtensor"
+
+
+
+ActiveThorns = "SummationByParts"
+
+SummationByParts::order = 4
+
+
+
+ActiveThorns = "InitBase"
+
+
+
+ActiveThorns = "Carpet CarpetLib CarpetInterp CarpetReduce"
+
+Carpet::verbose           = no
+Carpet::veryverbose       = no
+Carpet::schedule_barriers = no
+Carpet::storage_verbose   = no
+#Carpet::timers_verbose    = no
+CarpetLib::output_bboxes  = no
+
+Carpet::domain_from_coordbase = yes
+Carpet::max_refinement_levels = 6 #10
+
+driver::ghost_size       = 3
+Carpet::use_buffer_zones = yes
+
+Carpet::prolongation_order_space = 5
+Carpet::prolongation_order_time  = 2
+
+Carpet::convergence_level = 0
+
+Carpet::init_fill_timelevels = yes
+#Carpet::init_3_timelevels = yes
+
+Carpet::poison_new_timelevels = yes
+CarpetLib::poison_new_memory  = yes
+
+Carpet::output_timers_every      = 5120
+CarpetLib::print_timestats_every = 5120
+CarpetLib::print_memstats_every  = 5120
+
+
+
+ActiveThorns = "NaNChecker"
+
+NaNChecker::check_every     = 1 # 512
+#NaNChecker::verbose         = "all"
+#NaNChecker::action_if_found = "just warn"
+NaNChecker::action_if_found = "terminate"
+NaNChecker::check_vars      = "
+        ML_BSSN::ML_log_confac
+        ML_BSSN::ML_metric
+        ML_BSSN::ML_trace_curv
+        ML_BSSN::ML_curv
+        ML_BSSN::ML_Gamma
+        ML_BSSN::ML_lapse
+        ML_BSSN::ML_shift
+        ML_BSSN::ML_dtlapse
+        ML_BSSN::ML_dtshift
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMBase::shift
+        ADMBase::dtlapse
+        ADMBase::dtshift
+"
+
+
+
+ActiveThorns = "Boundary CartGrid3D CoordBase ReflectionSymmetry SymBase"
+
+CoordBase::domainsize = "minmax"
+
+CoordBase::xmin = -128.00
+CoordBase::ymin = -128.00
+CoordBase::zmin =    0.00
+CoordBase::xmax = +128.00
+CoordBase::ymax = +128.00
+CoordBase::zmax = +128.00
+CoordBase::dx   =    1.00
+CoordBase::dy   =    1.00
+CoordBase::dz   =    1.00
+
+CoordBase::boundary_size_x_lower     = 3
+CoordBase::boundary_size_y_lower     = 3
+CoordBase::boundary_size_z_lower     = 3
+CoordBase::boundary_size_x_upper     = 3
+CoordBase::boundary_size_y_upper     = 3
+CoordBase::boundary_size_z_upper     = 3
+
+CoordBase::boundary_shiftout_z_lower = 1
+
+CartGrid3D::type = "coordbase"
+
+ReflectionSymmetry::reflection_z   = yes
+ReflectionSymmetry::avoid_origin_z = no
+
+
+
+ActiveThorns = "SphericalSurface"
+
+SphericalSurface::nsurfaces = 6
+SphericalSurface::maxntheta = 39
+SphericalSurface::maxnphi   = 76
+
+SphericalSurface::ntheta      [0] = 39
+SphericalSurface::nphi        [0] = 76
+SphericalSurface::nghoststheta[0] = 2
+SphericalSurface::nghostsphi  [0] = 2
+
+SphericalSurface::ntheta      [1] = 39
+SphericalSurface::nphi        [1] = 76
+SphericalSurface::nghoststheta[1] = 2
+SphericalSurface::nghostsphi  [1] = 2
+
+SphericalSurface::ntheta      [2] = 39
+SphericalSurface::nphi        [2] = 76
+SphericalSurface::nghoststheta[2] = 2
+SphericalSurface::nghostsphi  [2] = 2
+
+SphericalSurface::ntheta      [3] = 39
+SphericalSurface::nphi        [3] = 76
+SphericalSurface::nghoststheta[3] = 2
+SphericalSurface::nghostsphi  [3] = 2
+
+SphericalSurface::ntheta      [4] = 39
+SphericalSurface::nphi        [4] = 76
+SphericalSurface::nghoststheta[4] = 2
+SphericalSurface::nghostsphi  [4] = 2
+
+SphericalSurface::ntheta      [5] = 39
+SphericalSurface::nphi        [5] = 76
+SphericalSurface::nghoststheta[5] = 2
+SphericalSurface::nghostsphi  [5] = 2
+
+
+
+ActiveThorns = "CarpetMask"
+
+CarpetMask::verbose = no
+
+CarpetMask::excluded_surface       [0] = 0
+CarpetMask::excluded_surface_factor[0] = 1.0
+
+CarpetMask::excluded_surface       [1] = 1
+CarpetMask::excluded_surface_factor[1] = 1.0
+
+CarpetMask::excluded_surface       [2] = 2
+CarpetMask::excluded_surface_factor[2] = 1.0
+
+
+
+ActiveThorns = "CarpetRegrid2 CarpetTracker"
+
+CarpetTracker::surface[0] = 0
+CarpetTracker::surface[1] = 1
+CarpetTracker::surface[2] = 2
+
+CarpetRegrid2::regrid_every            = -1 #512
+CarpetRegrid2::freeze_unaligned_levels = yes
+CarpetRegrid2::verbose                 = yes
+
+CarpetRegrid2::num_centres = 1
+
+CarpetRegrid2::num_levels_1         =  6
+CarpetRegrid2::position_x_1         =  0.0
+CarpetRegrid2::radius_1[ 1]         =  36.0 - 0.3125*16
+CarpetRegrid2::radius_1[ 2]         =  18.0 - 0.3125*8
+CarpetRegrid2::radius_1[ 3]         =  9.0  - 0.3125*4
+CarpetRegrid2::radius_1[ 4]         =  4.5  - 0.3125*2
+CarpetRegrid2::radius_1[ 5]         =  2.25 - 0.3125
+CarpetRegrid2::movement_threshold_1 =  0.16
+
+
+
+ActiveThorns = "MoL Time"
+
+MoL::ODE_Method             = "RK4"
+MoL::MoL_Intermediate_Steps = 4
+MoL::MoL_Num_Scratch_Levels = 1
+
+Carpet::time_refinement_factors = "[1, 1, 2, 4, 8, 16]" #, 32, 64, 128, 256]"
+
+Time::dtfac = 0.25
+
+
+
+ActiveThorns = "ADMBase ADMCoupling ADMMacros CoordGauge SpaceMask StaticConformal TmunuBase"
+
+ADMMacros::spatial_order = 4
+
+
+
+ActiveThorns = "TwoPunctures"
+
+ADMBase::metric_type = "physical"
+
+ADMBase::initial_data    = "twopunctures"
+ADMBase::initial_lapse   = "twopunctures-averaged"
+ADMBase::initial_shift   = "zero"
+ADMBase::initial_dtlapse = "zero"
+ADMBase::initial_dtshift = "zero"
+
+TwoPunctures::par_b          =  1.168642873
+TwoPunctures::par_m_plus     =  0.453
+TwoPunctures::par_m_minus    =  0.453
+TwoPunctures::par_P_plus [1] = +0.3331917498
+TwoPunctures::par_P_minus[1] = -0.3331917498
+
+TwoPunctures::grid_setup_method = "evaluation"
+
+TwoPunctures::TP_epsilon = 1.0e-2
+TwoPunctures::TP_Tiny    = 1.0e-2
+
+TwoPunctures::verbose = yes
+
+
+
+ActiveThorns = "ML_BSSN ML_BSSN_Helper NewRad"
+
+ADMBase::evolution_method         = "ML_BSSN"
+ADMBase::lapse_evolution_method   = "ML_BSSN"
+ADMBase::shift_evolution_method   = "ML_BSSN"
+ADMBase::dtlapse_evolution_method = "ML_BSSN"
+ADMBase::dtshift_evolution_method = "ML_BSSN"
+
+ML_BSSN::fdOrder             = 4
+
+# 1+log slicing requires harmonicN = 1 and harmonicF = 2.0
+ML_BSSN::harmonicN           = 1
+ML_BSSN::harmonicF           = 2.0
+
+ML_BSSN::ShiftGammaCoeff     = 0.75
+ML_BSSN::BetaDriver          = 1.0
+ML_BSSN::advectLapse         = 1
+ML_BSSN::advectShift         = 1
+
+ML_BSSN::MinimumLapse        = 1.0e-8
+
+# conformalaMethod = 1 for W, 0 for phi
+ML_BSSN::conformalMethod     = 1
+
+# We apply dissipation using GlobalDerivaitive so disable it here
+ML_BSSN::epsDiss             = 0.0
+
+ML_BSSN::dt_lapse_shift_method = "noLapseShiftAdvection"
+
+ML_BSSN::initial_boundary_condition = "extrapolate-gammas"
+ML_BSSN::rhs_boundary_condition     = "scalar"
+Boundary::radpower                  = 2
+
+
+
+ActiveThorns = "Dissipation"
+
+Dissipation::order = 5
+Dissipation::vars  = "
+        ML_BSSN::ML_log_confac
+        ML_BSSN::ML_metric
+        ML_BSSN::ML_trace_curv
+        ML_BSSN::ML_curv
+        ML_BSSN::ML_Gamma
+        ML_BSSN::ML_lapse
+        ML_BSSN::ML_shift
+        ML_BSSN::ML_dtlapse
+        ML_BSSN::ML_dtshift
+"
+
+
+
+ActiveThorns = "ML_ADMConstraints"
+
+
+ActiveThorns = "WeylScal4"
+WeylScal4::offset                    = 1e-8 
+WeylScal4::fd_order                  = "4th" 
+WeylScal4::verbose                   = 0 
+
+
+
+ActiveThorns = "CarpetIOBasic"
+
+IOBasic::outInfo_every      = 1
+IOBasic::outInfo_reductions = "norm2"
+IOBasic::outInfo_vars       = "
+        Carpet::physical_time_per_hour
+        ML_ADMConstraints::H
+"
+
+
+
+ActiveThorns = "CarpetIOScalar"
+
+IOScalar::one_file_per_group = yes
+
+IOScalar::outScalar_every = 12800
+IOScalar::outScalar_vars  = "
+        CarpetReduce::weight
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMBase::shift
+        ADMBase::dtlapse
+        ADMBase::dtshift
+        WEYLSCAL4::Psi4r
+        WEYLSCAL4::Psi4i
+        ML_ADMConstraints::ML_Ham
+        ML_ADMConstraints::ML_mom
+"
+
+
+
+ActiveThorns = "CarpetIOASCII"
+
+IOASCII::one_file_per_group = yes
+
+IOASCII::output_symmetry_points = no
+IOASCII::out3D_ghosts           = no
+
+IOASCII::out0D_every = 12800
+IOASCII::out0D_vars  = "
+        Carpet::timing
+        CarpetReduce::weight
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMBase::shift
+        ADMBase::dtlapse
+        ADMBase::dtshift
+        WEYLSCAL4::Psi4r
+        WEYLSCAL4::Psi4i
+        ML_ADMConstraints::ML_Ham
+        ML_ADMConstraints::ML_mom
+        SphericalSurface::sf_active
+        SphericalSurface::sf_valid
+        SphericalSurface::sf_info
+        SphericalSurface::sf_origin
+        SphericalSurface::sf_coordinate_descriptors
+"
+
+IOASCII::out1D_every = 12800
+IOASCII::out1D_vars  = "
+        CarpetReduce::weight
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMBase::shift
+        ADMBase::dtlapse
+        ADMBase::dtshift
+        WEYLSCAL4::Psi4r
+        WEYLSCAL4::Psi4i
+        ML_ADMConstraints::ML_Ham
+        ML_ADMConstraints::ML_mom
+"
+
+#IOASCII::out2D_every = 128
+#IOASCII::out2D_vars  = "
+#"
+
+
+
+Activethorns = "CarpetIOHDF5"
+
+IOHDF5::out_every              = 12800
+IOHDF5::one_file_per_group     = yes
+IOHDF5::output_symmetry_points = no
+IOHDF5::out3D_ghosts           = no
+IOHDF5::compression_level      = 1
+IOHDF5::use_checksums          = yes
+IOHDF5::out_vars               = "
+        CarpetReduce::weight
+        ADMBase::metric
+        ADMBase::curv
+        ADMBase::lapse
+        ADMBase::shift
+        ADMBase::dtlapse
+        ADMBase::dtshift
+        WEYLSCAL4::Psi4r
+        WEYLSCAL4::Psi4i
+        ML_ADMConstraints::ML_Ham
+        ML_ADMConstraints::ML_mom
+"
+
+IOHDF5::checkpoint                  = yes
+IO::checkpoint_dir                  = $parfile
+IO::checkpoint_ID                   = yes
+IO::checkpoint_every_walltime_hours = 6.0
+IO::checkpoint_on_terminate         = yes
+
+IO::recover     = "autoprobe"
+IO::recover_dir = $parfile
+
+
+
+ActiveThorns = "Formaline"
+
+
+
+ActiveThorns = "TimerReport"
+
+TimerReport::out_every                  = 5120
+TimerReport::out_filename               = "TimerReport"
+TimerReport::output_all_timers_together = yes
+TimerReport::output_all_timers_readable = yes
+TimerReport::n_top_timers               = 20
