@@ -122,9 +122,9 @@ CoordBase::zmin =    0.00
 CoordBase::xmax = +128.00
 CoordBase::ymax = +128.00
 CoordBase::zmax = +128.00
-CoordBase::dx   =    1.00
-CoordBase::dy   =    1.00
-CoordBase::dz   =    1.00
+CoordBase::dx   =    2.00
+CoordBase::dy   =    2.00
+CoordBase::dz   =    2.00
 
 CoordBase::boundary_size_x_lower     = 3
 CoordBase::boundary_size_y_lower     = 3
@@ -224,7 +224,7 @@ MoL::ODE_Method             = "RK4"
 MoL::MoL_Intermediate_Steps = 4
 MoL::MoL_Num_Scratch_Levels = 1
 
-Carpet::time_refinement_factors = "[1, 1, 2, 4, 8, 16]" #, 32, 64, 128, 256]"
+Carpet::time_refinement_factors = "[1, 2, 4, 8, 16, 32]" #, 32, 64, 128, 256]"
 
 Time::dtfac = 0.25
 
@@ -325,7 +325,7 @@ WeylScal4::verbose                   = 0
 
 ActiveThorns = "CarpetIOBasic"
 
-IOBasic::outInfo_every      = 1
+IOBasic::outInfo_every      = 8
 IOBasic::outInfo_reductions = "norm2"
 IOBasic::outInfo_vars       = "
         Carpet::physical_time_per_hour
