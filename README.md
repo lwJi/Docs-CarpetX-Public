@@ -31,3 +31,19 @@ for the grid index generated with `box_int`, should it be
   center index           7   8   9   10
 ```
 
+## More
+
+```
+   <-- gh ---> <-------------------- interior ---------------------
+
+   <---------- tile1 ------------> <---------- tile2 ------------>
+   
+  | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | ... 
+
+
+              | x | x | x | x | x | x | x | x | x | x | x | x | x | x | ... 
+
+
+          | x | x | x | x | x | x | x | x | x | x | x | x | x | x | x | ... 
+
+```
